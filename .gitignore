@@ -1,0 +1,13 @@
+/data/**
+!/data/**/
+!/data/**/.gitkeep
+
+environment/**
+!environment/**/
+!environment/**/.gitkeep
+
+/results/models/*.pt
+
+.vscode/
+
+__pycache__
