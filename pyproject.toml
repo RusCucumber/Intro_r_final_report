@@ -5,7 +5,12 @@ description = "Add your description here"
 authors = [
     { name = "RusCucumber", email = "w.d.ryu.m@gmail.com" }
 ]
-dependencies = []
+dependencies = [
+    "pandas>=2.2.3",
+    "jupyter>=1.1.1",
+    "rev-ai>=2.20.0",
+    "pydub>=0.25.1",
+]
 readme = "README.md"
 requires-python = ">= 3.8"
 
@@ -15,10 +20,21 @@ build-backend = "hatchling.build"
 
 [tool.rye]
 managed = true
-dev-dependencies = []
+dev-dependencies = [
+    "ruff>=0.8.0",
+]
 
 [tool.hatch.metadata]
 allow-direct-references = true
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/intro_r_final_report"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 119
+exclude = [".mypy_cache"]
+ 
+[tool.ruff.lint]
+select = ["E", "W", "F", "I", "C90"]
+ignore = ["E203"]
