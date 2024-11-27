@@ -263,6 +263,8 @@ tornado==6.4.2
     # via jupyterlab
     # via notebook
     # via terminado
+tqdm==4.67.1
+    # via intro-r-final-report
 traitlets==5.14.3
     # via comm
     # via ipykernel
