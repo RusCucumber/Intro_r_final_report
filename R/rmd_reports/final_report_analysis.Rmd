@@ -334,6 +334,8 @@ df_uf_anxiety %>%
 
 The result showed significant large correlation between cognitive anxiety and ECPR, suggesting that participants produced end-clause pauses more frequently when cognitive anxiety was lower.
 
+Moreover, scatter plots between cognitive anxiety and AR, MCPD, and ECPD demonstrated parabolic patterns. More specifically, AR was slower when cognitive anxiety was lower or higher. In contrast, MCPD and ECPD was longer when cognitive anxiety was lower or higher.
+
 #### 3.5.3. Correlations Between UF Measures and Somatic Anxiety
 
 The following code block generates a correlation matrix of UF measures and somatic anxiety.
@@ -370,50 +372,94 @@ The result identified significant large correlations between behavioral anxiety 
 
 ## 4. Regression Analyses
 
-### 4.1. SF \~ Speaking Anxiety
+### 4.1. Centralization
 
-The following code block constructs a regression model between AR and speaking anxiety.
+Given the parabolic relationship between cognitive anxiety and AR, MCPD, ECPD, I explore linear and quadratic relationship between them. To mitigate multicolinearity, the following code block centralizes anxiety scores.
 
 ```{r}
-model_ar <- lm(
+df_uf_anxiety %>%
+  mutate(
+    cognitive_anxiety = cognitive_anxiety - mean(cognitive_anxiety),
+    somatic_anxiety = somatic_anxiety - mean(somatic_anxiety),
+    behavioral_anxiety = behavioral_anxiety - mean(behavioral_anxiety)
+  ) -> df_uf_anxiety_centered
+```
+
+### 4.3. SF \~ Speaking Anxiety
+
+Given the parabolic relationship between AR and cognitive anxiety, I compare linear and quadratic models in terms of AIC and the reliability of models.
+
+#### 4.3.1. Linear Model
+
+The following code block constructs a linear model between AR and speaking anxiety, where cognitive anxiety term is a linear.
+
+```{r}
+model_ar_linear <- lm(
   articulation_rate ~ cognitive_anxiety + somatic_anxiety + behavioral_anxiety,
-  df_uf_anxiety
+  df_uf_anxiety_centered
 )
 ```
 
 The following code block shows the result.
 
 ```{r}
-tab_model(model_ar, digits = 3)
+tab_model(model_ar_linear, digits = 3, show.aic = T)
 ```
 
-The result did not show significant relationship between three anxiety scores and AR.
+The result did not show significant relationship between three anxiety scores and AR. In addition, AIC was $28.729$.
 
 To examine the reliability of the current model, the following code block conducts post-hoc analysis of regression assumptions.
 
 ```{r}
-check_model(model_ar)
+check_model(model_ar_linear)
 ```
 
-The results suggested that the current model could be reliable.
+The results suggested that the linear model could be reliable.
 
-### 4.2. BDF \~ Speaking Anxiety
+#### 4.2.2. Quadratic Model
 
-#### 4.2.1. MCPR \~ Speaking Anxiety
+The following code block constructs a quadratic model between AR and speaking anxiety, adding a quadratic cognitive anxiety term.
+
+```{r}
+model_ar_quad <- lm(
+  articulation_rate ~ cognitive_anxiety + I(cognitive_anxiety^2) + somatic_anxiety + behavioral_anxiety,
+  df_uf_anxiety_centered
+)
+```
+
+The following code block shows the result of the quadratic model.
+
+```{r}
+tab_model(model_ar_quad, digits = 3, show.aic = T)
+```
+
+The result also showed that any anxiety did not significantly explain AR. AIC was $29.499$, which was higher than the liner model, suggesting that the quadratic model is less-fit than the model linear.
+
+The following code block conducts post-hoc analysis of the quadratic model.
+
+```{r}
+check_model(model_ar_quad)
+```
+
+The results indicated that the quadratic model was less reliable because an outliner impact was big. Thus, I decided that the linear model is more representative of the association between AR and speaking anxiety though there was no significant relationship between them.
+
+### 4.3. BDF \~ Speaking Anxiety
+
+#### 4.3.1. MCPR \~ Speaking Anxiety
 
 The following code block constructs a regression model between MCPR and speaking anxiety.
 
 ```{r}
 model_mcpr <- lm(
   mid_clause_pause_ratio ~ cognitive_anxiety + somatic_anxiety + behavioral_anxiety,
-  df_uf_anxiety
+  df_uf_anxiety_centered
 )
 ```
 
 The following code block shows the result.
 
 ```{r}
-tab_model(model_mcpr, digits = 3)
+tab_model(model_mcpr, digits = 3, show.aic = T)
 ```
 
 The result did not show significant relationship between three anxiety scores and MCPR.
@@ -426,21 +472,21 @@ check_model(model_mcpr)
 
 The results suggested that the current model could be less reliable because the model could be affected by an outlier.
 
-#### 4.2.2. ECPR \~ Speaking Anxiety
+#### 4.3.2. ECPR \~ Speaking Anxiety
 
 The following code block constructs a regression model between ECPR and speaking anxiety.
 
 ```{r}
 model_ecpr <- lm(
   end_clause_pause_ratio ~ cognitive_anxiety + somatic_anxiety + behavioral_anxiety,
-  df_uf_anxiety
+  df_uf_anxiety_centered
 )
 ```
 
 The following code block shows the result.
 
 ```{r}
-tab_model(model_ecpr, digits = 3)
+tab_model(model_ecpr, digits = 3, show.aic = T)
 ```
 
 The result showed slightly significant relationship between cognitive anxiety and ECPR ($p=.081$). The slope was $-.003$ and suggested that ECPR decreased $.003$ when cognitive anxiety increased $1$.
@@ -453,75 +499,135 @@ check_model(model_ecpr)
 
 The results suggested that the current model could be reliable.
 
-#### 4.2.3. MCPD \~ Speaking Anxiety
+#### 4.3.3. MCPD \~ Speaking Anxiety
 
-The following code block constructs a regression model between MCPD and speaking anxiety.
+Since the scatter plot showed parabolic relationship, I explore two linear and quadratic models.
+
+##### 4.3.3.1. Linear Model
+
+The following code block constructs a linear model between MCPD and speaking anxiety.
 
 ```{r}
-model_mcpd <- lm(
+model_mcpd_linear <- lm(
   mid_clause_p.dur ~ cognitive_anxiety + somatic_anxiety + behavioral_anxiety,
-  df_uf_anxiety
+  df_uf_anxiety_centered
 )
 ```
 
 The following code block shows the result.
 
 ```{r}
-tab_model(model_mcpd, digits = 3)
+tab_model(model_mcpd_linear, digits = 3, show.aic = T)
 ```
 
-The result showed a significant link between behavioral anxiety and MCPD ($p=.025$). The slope was $-.074$, suggesting that MCPD became $.074$ shorter when behavioral anxiety score increased $1$.
+The result showed a significant link between behavioral anxiety and MCPD ($p=.025$). The slope was $-.074$, suggesting that MCPD became $.074$ shorter when behavioral anxiety score increased $1$. In addition, AIC achieved $.428$.
 
-To examine the reliability of the current model, the following code block conducts post-hoc analysis of regression assumptions.
+To examine the reliability of the linear model, the following code block conducts post-hoc analysis of regression assumptions.
 
 ```{r}
-check_model(model_mcpd)
+check_model(model_mcpd_linear)
 ```
 
 The results suggested that the current model could be reliable.
 
-#### 4.2.4. ECPD \~ Speaking Anxiety
+##### 4.3.3.2. Quadratic Model
 
-The following code block constructs a regression model between AR and speaking anxiety.
+The following code block constructs a quadratic model.
 
 ```{r}
-model_ecpd <- lm(
+model_mcpd_quad <- lm(
+  mid_clause_p.dur ~ cognitive_anxiety + I(cognitive_anxiety^2) + somatic_anxiety + behavioral_anxiety,
+  df_uf_anxiety_centered
+)
+```
+
+The following code block showed the result.
+
+```{r}
+tab_model(model_mcpd_quad, digits = 3, show.aic = T)
+```
+
+The results did not demonstrate significant predictors, while AIC was $-.373$, which was lower than the linear model.
+
+The following code block conducts post-hoc analysis of the quadratic model.
+
+```{r}
+check_model(model_mcpd_quad)
+```
+
+The results showed the model was affected by an outlier. Since the current sample size was 10, the lower AIC could be caused by overfit. Thus, I determined the linear model as a representative model.
+
+#### 4.3.4. ECPD \~ Speaking Anxiety
+
+##### 4.3.4.1. Linear model
+
+The following code block constructs a linear model between AR and speaking anxiety.
+
+```{r}
+model_ecpd_linear <- lm(
   end_clause_p.dur ~ cognitive_anxiety + somatic_anxiety + behavioral_anxiety,
-  df_uf_anxiety
+  df_uf_anxiety_centered
 )
 ```
 
 The following code block shows the result.
 
 ```{r}
-tab_model(model_ecpd, digits = 3)
+tab_model(model_ecpd_linear, digits = 3, show.aic = T)
 ```
 
-The result showed a significant link between behavioral anxiety and MCPD ($p=.020$). The slope was $-.072$, suggesting that ECPD became $.072$ shorter when behavioral anxiety score increased $1$.
+The result showed a significant link between behavioral anxiety and MCPD ($p=.020$). The slope was $-.072$, suggesting that ECPD became $.072$ shorter when behavioral anxiety score increased $1$. AIC was $-1.473$.
 
 To examine the reliability of the current model, the following code block conducts post-hoc analysis of regression assumptions.
 
 ```{r}
-check_model(model_ecpd)
+check_model(model_ecpd_linear)
 ```
 
 The results suggested that the current model could be reliable.
 
-### 4.3. RF \~ Speaking Anxiety
+##### 4.3.4.2. Quadratic Model
+
+The following code block constructs a linear model between AR and speaking anxiety.
+
+```{r}
+model_ecpd_quad <- lm(
+  end_clause_p.dur ~ cognitive_anxiety + I(cognitive_anxiety^2) + somatic_anxiety + behavioral_anxiety,
+  df_uf_anxiety_centered
+)
+```
+
+The following code block shows the result.
+
+```{r}
+tab_model(model_ecpd_quad, digits = 3, show.aic = T)
+```
+
+The result did not show significant predictor. Moreover, AIC was higher than the linear model ($.209$).
+
+To examine the reliability of the quadratic model, the following code block conducts post-hoc analysis of regression assumptions.
+
+```{r}
+check_model(model_ecpd_quad)
+```
+
+The results suggested that the current model could be less reliable than the linear model because of larger outlier impacts.
+
+### 4.4. RF \~ Speaking Anxiety
 
 The following code block constructs a regression model between DR and speaking anxiety.
 
 ```{r}
 model_dr <- lm(
   disfluency_ratio ~ cognitive_anxiety + somatic_anxiety + behavioral_anxiety,
-  df_uf_anxiety
+  df_uf_anxiety_centered
 )
 ```
 
 The following code block shows the result.
 
 ```{r}
-tab_model(model_dr, digits = 3)
+tab_model(model_dr, digits = 3, show.aic = T)
 ```
 
 The result did not show significant relationship between three anxiety scores and DR.
