@@ -296,6 +296,12 @@ df_questionnaire_tidy %>%
 df_uf_anxiety
 ```
 
+The following code block saves the concatenated dataframe as a csv file.
+
+```{r}
+write.csv(df_uf_anxiety, here("data", "processed", "uf_anxiety.csv"))
+```
+
 #### 3.5.1. Correlations Among Anxiety Scores
 
 The following code block generates a correlation matrix of three anxiety scores.
