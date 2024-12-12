@@ -219,7 +219,7 @@ The result suggested that most participants were advanced-level L2 English learn
 
 The following code block calculates the descriptive statistics of UF measures.
 
-```{r}
+```{r, skimr_digits=4}
 df_uf_tidy %>%
   select(-c(participant_id)) %>%
   skim()
@@ -294,6 +294,14 @@ df_questionnaire_tidy %>%
   ) -> df_uf_anxiety
 
 df_uf_anxiety
+```
+
+The following code block calculates the descriptive statistics of anxiety scores.
+
+```{r, skimr_digits=4}
+df_uf_anxiety %>%
+  select(cognitive_anxiety, somatic_anxiety, behavioral_anxiety) %>%
+  skim()
 ```
 
 The following code block saves the concatenated dataframe as a csv file.
@@ -534,4 +542,18 @@ check_model(model_dr)
 
 The results suggested that the current model could be less reliable because the model could be affected by an outlier.
 
-### 
+The following code block shows the summary of regression models.
+
+```{r}
+tab_model(
+  model_ar,
+  model_mcpr,
+  model_ecpr,
+  model_mcpd,
+  model_ecpd,
+  model_dr,
+  dv.labels = c("AR", "MCPR", "ECPR", "MCPD", "ECPD", "DR"),
+  pred.labels = c("(Intercept)", "CA", "SA", "BA"),
+  digits = 3
+)
+```
