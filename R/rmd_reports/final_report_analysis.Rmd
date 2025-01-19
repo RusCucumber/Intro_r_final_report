@@ -557,3 +557,83 @@ tab_model(
   digits = 3
 )
 ```
+
+```{r}
+df_uf_anxiety %>%
+  select(c(
+    cognitive_anxiety,
+    articulation_rate
+  )) %>%
+  chart.Correlation(histogram = F, method = "pearson", pch = 19)
+```
+
+```{r}
+df_uf_anxiety %>%
+  select(c(
+    cognitive_anxiety,
+    mid_clause_p.dur
+  )) %>%
+  chart.Correlation(histogram = F, method = "pearson", pch = 19)
+```
+
+```{r}
+df_uf_anxiety %>%
+  select(c(
+    cognitive_anxiety,
+    articulation_rate,
+    mid_clause_p.dur,
+    end_clause_p.dur
+  )) %>%
+  pairs(panel = panel.smooth, pch = 19)
+```
+
+```{r}
+plot(
+  df_uf_anxiety$cognitive_anxiety, 
+  df_uf_anxiety$articulation_rate,
+  pch = 19,
+  xlab = "Cognitive Anxiety",
+  ylab = "Articulation Rate"
+)
+lines(
+  lowess(
+    df_uf_anxiety$cognitive_anxiety, 
+    df_uf_anxiety$articulation_rate
+  ), 
+  col = 2
+)
+```
+
+```{r}
+plot(
+  df_uf_anxiety$cognitive_anxiety, 
+  df_uf_anxiety$mid_clause_p.dur,
+  pch = 19,
+  xlab = "Cognitive Anxiety",
+  ylab = "Mid-Clause Pause Duration"
+)
+lines(
+  lowess(
+    df_uf_anxiety$cognitive_anxiety, 
+    df_uf_anxiety$mid_clause_p.dur
+  ), 
+  col = 2
+)
+```
+
+```{r}
+plot(
+  df_uf_anxiety$cognitive_anxiety, 
+  df_uf_anxiety$end_clause_p.dur,
+  pch = 19,
+  xlab = "Cognitive Anxiety",
+  ylab = "End-Clause Pause Duration"
+)
+lines(
+  lowess(
+    df_uf_anxiety$cognitive_anxiety, 
+    df_uf_anxiety$end_clause_p.dur
+  ), 
+  col = 2
+)
+```
